@@ -65,7 +65,7 @@ func (dl *Downloader) downloadObject(key *string) error {
 
 	splitedKey := strings.Split(*key, "_")
 	if dl.cfg.NoDecompress {
-		suffix := splitedKey[len(splitedKey)-4]
+		suffix := strings.Join(splitedKey[len(splitedKey)-4:], "_")
 		outfile = fmt.Sprintf("%s_%s", dl.cfg.LogPrefix, suffix)
 		rf, err = os.OpenFile(tmpfile.Name(), os.O_RDONLY, 0666)
 		if err != nil {
@@ -95,8 +95,8 @@ func (dl *Downloader) downloadObject(key *string) error {
 	if err != nil {
 		return fmt.Errorf("failed to write file, %v", err)
 	}
-	fmt.Println("write:", n)
-	fmt.Println("s3obj:", *key)
-	fmt.Println("outfile:", outfile)
+	fmt.Println("write  \t:", n)
+	fmt.Println("s3obj  \t:", *key)
+	fmt.Println("output \t:", outfile)
 	return nil
 }

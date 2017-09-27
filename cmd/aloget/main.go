@@ -49,11 +49,11 @@ func main() {
 			list.GetLatestTime().Format(timeFormatInput),
 		)
 		fmt.Printf("%s%s\n",
-			"Size\t:",
+			"Donwload Size\t:",
 			humanize.Bytes(uint64(totalSizeBytes)),
 		)
-		fmt.Printf("%s%d\n",
-			"Files\t:",
+		fmt.Printf("%s%d\n objects",
+			"S3 Objects   \t:",
 			list.Len(),
 		)
 		fmt.Print("Start/Cancel>")
@@ -73,6 +73,6 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("Download Completed. All logs appended to %s.\n", config.LogPrefix)
+	fmt.Printf("Download Completed.\n")
 
 }

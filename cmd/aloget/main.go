@@ -43,16 +43,16 @@ func main() {
 	var key string
 	var ok bool
 	for !ok {
-		fmt.Printf("%s%s  -  %s\n",
-			"From-To\t:",
+		fmt.Printf("%s %s  -  %s\n",
+			"From-To      \t:",
 			list.GetOldestTime().Format(timeFormatInput),
 			list.GetLatestTime().Format(timeFormatInput),
 		)
-		fmt.Printf("%s%s\n",
+		fmt.Printf("%s %s\n",
 			"Donwload Size\t:",
 			humanize.Bytes(uint64(totalSizeBytes)),
 		)
-		fmt.Printf("%s%d\n objects",
+		fmt.Printf("%s %d objects\n",
 			"S3 Objects   \t:",
 			list.Len(),
 		)

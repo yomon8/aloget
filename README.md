@@ -37,7 +37,7 @@ Download from [released file](https://github.com/yomon8/aloget/releases)
 |-r|Required to set AWS Region or set env variable AWS_REGION| -r us-west-1|
 |-s|Download files newer than start time (default 10 minutes ago)| -s "2017-09-28 11:59:54"|
 |-e|Download files older than end time (defalut now)| -e "2017-09-28 12:59:54" |
-|-cred|Use credential file (Usually ~/.aws/credentials)| -cred|
+|-cred|Use default profile of credential file (Usually ~/.aws/credentials)| -cred|
 |-gz|Don't decompress gzip file | -gz |
 |-version|Show Version|-version|
 |-utc|Recognize the datetime value of -s and -e as UTC| -utc|

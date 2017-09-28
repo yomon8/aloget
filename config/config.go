@@ -178,8 +178,15 @@ func LoadConfig() (*Config, error) {
 	var err error
 	if useDefaultCredensial {
 		c.Session, err = session.NewSession(&aws.Config{
-			Region: aws.String(c.Region),
+			Credentials: credentials.NewSharedCredentials("", "default"),
+			Region:      aws.String(c.Region),
 		})
+		if err != nil {
+			c.Session, err = session.NewSession(&aws.Config{
+				Credentials: credentials.NewEnvCredentials(),
+				Region:      aws.String(c.Region),
+			})
+		}
 	} else {
 		c.Session, err = session.NewSession(&aws.Config{
 			Credentials: credentials.NewEnvCredentials(),

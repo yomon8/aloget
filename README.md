@@ -20,7 +20,7 @@ $ aloget -l <OutputFilePrefix> -b <S3Bucket> -p <ALBAccessLogPrefix> [options]
 
 |Option|Description|Example|
 |:--|:--|:--|
-|-l(Required)|Output file prefix|-l /tmp/alblog|
+|-o(Required)|Output file prefix|-l /tmp/alblog|
 |-b(Required)|S3 Bucket name| -b yourbucket|
 |-p(Required)|S3 ALB AccessLog Prefix| -p alb-log/alb-name|
 |-r|Required to set AWS Region or set env variable AWS_REGION| -r us-west-1|

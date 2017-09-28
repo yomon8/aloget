@@ -81,7 +81,7 @@ func LoadConfig() (*Config, error) {
 
 	flag.StringVar(
 		&c.LogPrefix,
-		"l",
+		"o",
 		"",
 		"[Required] Output file prefix. (ex \"/tmp/alb\")",
 	)
@@ -90,14 +90,14 @@ func LoadConfig() (*Config, error) {
 		&c.StartTime,
 		"s",
 		defaultStartTime.Format(timeFormatInput),
-		"Start Time, default is 10 minutes ago",
+		"Start Time. default 10 minutes ago",
 	)
 
 	flag.StringVar(
 		&c.EndTime,
 		"e",
 		defaultEndTime.Format(timeFormatInput),
-		"End Time defalut is now ",
+		"End Time. defalut now ",
 	)
 
 	flag.StringVar(
@@ -111,21 +111,21 @@ func LoadConfig() (*Config, error) {
 		&c.IsUTC,
 		"utc",
 		false,
-		"Input times are UTC",
+		"-s and -e as UTC",
 	)
 
 	flag.BoolVar(
 		&c.NoDecompress,
 		"gz",
 		false,
-		"not decompress gzip",
+		"Don't decompress gzip",
 	)
 
 	flag.BoolVar(
 		&useDefaultCredensial,
 		"cred",
 		false,
-		"Use credentials file (~/.aws/credentials)",
+		"Use default credentials (~/.aws/credentials)",
 	)
 
 	flag.BoolVar(

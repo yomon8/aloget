@@ -24,15 +24,19 @@ func main() {
 		os.Exit(1)
 	}
 
-	localzone, _ := time.Now().In(time.Local).Zone()
+	zone := "UTC"
+	if !config.IsUTC {
+		zone, _ = time.Now().In(time.Local).Zone()
+	}
+
 	start, _ := time.Parse(
 		timeFormatInput,
-		fmt.Sprintf("%s %s", config.StartTime, localzone),
+		fmt.Sprintf("%s %s", config.StartTime, zone),
 	)
 
 	end, _ := time.Parse(
 		timeFormatInput,
-		fmt.Sprintf("%s %s", config.EndTime, localzone),
+		fmt.Sprintf("%s %s", config.EndTime, zone),
 	)
 
 	list, err := list.GetObjectList(start, end, config)
@@ -55,6 +59,11 @@ func main() {
 		for !ok {
 			fmt.Printf("%s %s  -  %s\n",
 				"From-To      \t:",
+				list.GetOldestTime().In(time.Local).Format(timeFormatInput),
+				list.GetLatestTime().In(time.Local).Format(timeFormatInput),
+			)
+			fmt.Printf("%s %s  -  %s\n",
+				"From-To(UTC) \t:",
 				list.GetOldestTime().Format(timeFormatInput),
 				list.GetLatestTime().Format(timeFormatInput),
 			)

@@ -36,36 +36,47 @@ func main() {
 	)
 
 	list, err := list.GetObjectList(start, end, config)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	if list.Len() == 0 {
+		fmt.Println("No S3 objects selected, maybe invalid values in parameters")
+		os.Exit(1)
+	}
+
 	totalSizeBytes := list.GetTotalByte()
 	sort.Sort(list)
 
 	// wait for user prompt
-	var key string
-	var ok bool
-	for !ok {
-		fmt.Printf("%s %s  -  %s\n",
-			"From-To      \t:",
-			list.GetOldestTime().Format(timeFormatInput),
-			list.GetLatestTime().Format(timeFormatInput),
-		)
-		fmt.Printf("%s %s\n",
-			"Donwload Size\t:",
-			humanize.Bytes(uint64(totalSizeBytes)),
-		)
-		fmt.Printf("%s %d objects\n",
-			"S3 Objects   \t:",
-			list.Len(),
-		)
-		fmt.Print("Start/Cancel>")
-		fmt.Scanf("%s", &key)
-		switch key {
-		case "S", "s", "Start", "start":
-			ok = true
-		case "C", "c", "Cancel", "cancel":
-			fmt.Println("canceled.")
-			os.Exit(1)
-		default:
-			continue
+	if !config.ForceMode {
+		var key string
+		var ok bool
+		for !ok {
+			fmt.Printf("%s %s  -  %s\n",
+				"From-To      \t:",
+				list.GetOldestTime().Format(timeFormatInput),
+				list.GetLatestTime().Format(timeFormatInput),
+			)
+			fmt.Printf("%s %s\n",
+				"Donwload Size\t:",
+				humanize.Bytes(uint64(totalSizeBytes)),
+			)
+			fmt.Printf("%s %d objects\n",
+				"S3 Objects   \t:",
+				list.Len(),
+			)
+			fmt.Print("Start/Cancel>")
+			fmt.Scanf("%s", &key)
+			switch key {
+			case "S", "s", "Start", "start":
+				ok = true
+			case "C", "c", "Cancel", "cancel":
+				fmt.Println("canceled.")
+				os.Exit(1)
+			default:
+				continue
+			}
 		}
 	}
 

@@ -109,7 +109,7 @@ func LoadConfig() (*Config, error) {
 
 	flag.BoolVar(
 		&c.IsUTC,
-		"UTC",
+		"utc",
 		false,
 		"Input times are UTC",
 	)
@@ -123,7 +123,7 @@ func LoadConfig() (*Config, error) {
 
 	flag.BoolVar(
 		&useDefaultCredensial,
-		"c",
+		"cred",
 		false,
 		"Use credentials file (~/.aws/credentials)",
 	)

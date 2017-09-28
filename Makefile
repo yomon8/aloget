@@ -1,4 +1,5 @@
 BIN      := aloget 
+OSARCH   := "darwin/amd64 linux/amd64 windows/amd64"
 VERSION  := $(shell git describe --tags)
 
 all: build
@@ -20,6 +21,7 @@ lint: deps
 crossbuild:
 	rm -fR ./pkg && mkdir ./pkg ;\
 		gox \
+		-osarch $(OSARCH) \
 		-output "./pkg/{{.OS}}_{{.Arch}}/{{.Dir}}" \
 		-ldflags "-X config.version=$(VERSION)" \
 		./cmd/...

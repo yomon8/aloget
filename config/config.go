@@ -76,14 +76,14 @@ func LoadConfig() (*Config, error) {
 		&c.S3Prefix,
 		"p",
 		"",
-		"[Required] S3 Prefix",
+		"[Required] S3 ALB AccessLog Prefix",
 	)
 
 	flag.StringVar(
 		&c.LogPrefix,
-		"f",
+		"l",
 		"",
-		"[Required] Logfile prefix. (ex \"/tmp/alb_\")",
+		"[Required] Output file prefix. (ex \"/tmp/alb\")",
 	)
 
 	flag.StringVar(

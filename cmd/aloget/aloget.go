@@ -18,28 +18,28 @@ const (
 )
 
 func main() {
-	config, err := config.LoadConfig()
+	cfg, err := config.LoadConfig()
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
 
 	zone := "UTC"
-	if !config.IsUTC {
+	if !cfg.IsUTC {
 		zone, _ = time.Now().In(time.Local).Zone()
 	}
 
 	start, _ := time.Parse(
 		timeFormatInput,
-		fmt.Sprintf("%s %s", config.StartTime, zone),
+		fmt.Sprintf("%s %s", cfg.StartTime, zone),
 	)
 
 	end, _ := time.Parse(
 		timeFormatInput,
-		fmt.Sprintf("%s %s", config.EndTime, zone),
+		fmt.Sprintf("%s %s", cfg.EndTime, zone),
 	)
 
-	list, err := list.GetObjectList(start, end, config)
+	list, err := list.GetObjectList(start, end, cfg)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -53,26 +53,30 @@ func main() {
 	sort.Sort(list)
 
 	// wait for user prompt
-	if !config.ForceMode {
+	if !cfg.ForceMode {
 		var key string
 		var ok bool
 		for !ok {
 			fmt.Printf("%s %s  -  %s\n",
-				"From-To      \t:",
+				fmt.Sprintf("From-To(%s) \t:", zone),
 				list.GetOldestTime().In(time.Local).Format(timeFormatInput),
 				list.GetLatestTime().In(time.Local).Format(timeFormatInput),
 			)
 			fmt.Printf("%s %s  -  %s\n",
-				"From-To(UTC) \t:",
+				"From-To(UTC)   \t:",
 				list.GetOldestTime().Format(timeFormatInput),
 				list.GetLatestTime().Format(timeFormatInput),
 			)
 			fmt.Printf("%s %s\n",
-				"Donwload Size\t:",
+				"Download Size  \t:",
 				humanize.Bytes(uint64(totalSizeBytes)),
 			)
+			fmt.Printf("%s %s\n",
+				"Decompress Gzip\t:",
+				fmt.Sprint(!cfg.NoDecompress),
+			)
 			fmt.Printf("%s %d objects\n",
-				"S3 Objects   \t:",
+				"S3 Objects    \t:",
 				list.Len(),
 			)
 			fmt.Print("Start/Cancel>")
@@ -89,7 +93,7 @@ func main() {
 		}
 	}
 
-	err = downloader.NewDownloader(config).Download(list)
+	err = downloader.NewDownloader(cfg).Download(list)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)

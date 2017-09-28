@@ -1,6 +1,8 @@
 BIN      := aloget 
 OSARCH   := "darwin/amd64 linux/amd64 windows/amd64"
+PKGS     := $(shell ls ./pkg)
 VERSION  := $(shell git describe --tags)
+
 
 all: build
 
@@ -24,7 +26,8 @@ package:
 		-osarch $(OSARCH) \
 		-output "./pkg/{{.OS}}_{{.Arch}}/{{.Dir}}" \
 		-ldflags "-X config.version=$(VERSION)" \
-		./cmd/...
+		./cmd/...;\
+	    for d in $(PKGS);do zip ./pkg/$${d}.zip ./pkg/$${d}/*;done
 
 build:
 	go build -o $(BIN) -ldflags "-X config.version=$(VERSION)" ./cmd/...

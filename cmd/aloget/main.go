@@ -71,8 +71,8 @@ func main() {
 
 	err = downloader.NewDownloader(config).Download(list)
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
+		os.Exit(1)
 	}
 	fmt.Printf("Download Completed.\n")
-
 }

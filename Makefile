@@ -1,6 +1,5 @@
 BIN      := aloget 
 OSARCH   := "darwin/amd64 linux/amd64 windows/amd64"
-PKGS     := $(shell ls ./pkg)
 VERSION  := $(shell git describe --tags)
 
 
@@ -27,7 +26,7 @@ package:
 		-output "./pkg/{{.OS}}_{{.Arch}}/{{.Dir}}" \
 		-ldflags "-X github.com/yomon8/aloget/config.version=$(VERSION)" \
 		./cmd/...;\
-	    for d in $(PKGS);do zip ./pkg/$${d}.zip ./pkg/$${d}/*;done
+	    for d in $$(ls ./pkg);do zip ./pkg/$${d}.zip ./pkg/$${d}/*;done
 
 build:
 	go build -o $(BIN) -ldflags "-X github.com/yomon8/aloget/config.version=$(VERSION)" ./cmd/...

@@ -3,7 +3,7 @@ AWS ALB Access Log Downloader
 
 ## Usage
 
-Set below if necessary or use `-cred` and `-r` option
+Set below if necessary or use `-cred` and `-r` option.
 
 ```
 $ export AWS_ACCESS_KEY_ID='yourkey'
@@ -15,6 +15,17 @@ $ export AWS_REGION='us-east-1'
 ```
 $ aloget -l <OutputFilePrefix> -b <S3Bucket> -p <ALBAccessLogPrefix> [options]
 ```
+
+## Install
+
+
+```
+go install github.com/yomon8/aloget/...
+```
+
+or 
+ 
+Download from [released file](https://github.com/yomon8/aloget/releases)
 
 ## OPTIONS
 

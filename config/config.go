@@ -29,6 +29,10 @@ type Config struct {
 	EndTime      string
 }
 
+var (
+	version = "0"
+)
+
 const (
 	maxkey          = 10240
 	timeFormatInput = "2006-01-02 15:04:05"
@@ -143,14 +147,15 @@ func LoadConfig() (*Config, error) {
 	)
 
 	flag.Parse()
+
+	if isVersion {
+		fmt.Println("version :", version)
+		os.Exit(0)
+	}
+
 	if len(os.Args) == 1 || isHelp || c.S3Prefix == "" || c.S3Bucket == "" || c.LogPrefix == "" {
 		flag.Usage()
 		os.Exit(255)
-	}
-
-	if isVersion {
-		fmt.Println(version)
-		os.Exit(0)
 	}
 
 	if c.Region == "" {

@@ -25,12 +25,12 @@ package:
 		gox \
 		-osarch $(OSARCH) \
 		-output "./pkg/{{.OS}}_{{.Arch}}/{{.Dir}}" \
-		-ldflags "-X config.version=$(VERSION)" \
+		-ldflags "-X github.com/yomon8/aloget/config.version=$(VERSION)" \
 		./cmd/...;\
 	    for d in $(PKGS);do zip ./pkg/$${d}.zip ./pkg/$${d}/*;done
 
 build:
-	go build -o $(BIN) -ldflags "-X config.version=$(VERSION)" ./cmd/...
+	go build -o $(BIN) -ldflags "-X github.com/yomon8/aloget/config.version=$(VERSION)" ./cmd/...
 
 linuxbuild:
 	GOOS=linux GOARCH=amd64 make build

@@ -18,7 +18,7 @@ lint: deps
 	go vet ./...
 	golint -set_exit_status ./...
 
-crossbuild:
+package:
 	rm -fR ./pkg && mkdir ./pkg ;\
 		gox \
 		-osarch $(OSARCH) \

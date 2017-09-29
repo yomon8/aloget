@@ -13,7 +13,7 @@ $ export AWS_REGION='us-east-1'
 
 
 ```
-$ aloget -l <OutputFilePrefix> -b <S3Bucket> -p <ALBAccessLogPrefix> [options]
+$ aloget -o <OutputFilePrefix> -b <S3Bucket> -p <ALBAccessLogPrefix> [options]
 ```
 
 ## Install

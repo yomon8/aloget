@@ -20,6 +20,7 @@ $ aloget -l <OutputFilePrefix> -b <S3Bucket> -p <ALBAccessLogPrefix> [options]
 
 
 ```
+go get github.com/yomon8/aloget/...
 go install github.com/yomon8/aloget/...
 ```
 

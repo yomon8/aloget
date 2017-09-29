@@ -61,17 +61,30 @@ func (dl *Downloader) downloadObject(key *string) error {
 	fmt.Println("download:", d)
 
 	var (
-		rf      io.Reader
-		outfile string
+		rf       io.Reader
+		outfile  string
+		writeFlg int
 	)
 
-	if dl.cfg.NoDecompress {
+	if dl.cfg.IsELB {
+		// ELB Text
+		elbIP := splitedKey[len(splitedKey)-2]
+		outfile = fmt.Sprintf("%s_%s.log", dl.cfg.LogPrefix, elbIP)
+		rf, err = os.OpenFile(tmpfile.Name(), os.O_RDONLY, 0666)
+		if err != nil {
+			return fmt.Errorf("failed to read tmpfile ,%s, %v", tmpfile.Name(), err)
+		}
+		writeFlg = os.O_CREATE | os.O_WRONLY | os.O_APPEND
+	} else if dl.cfg.PreserveGzip {
+		// ALB Gzip
 		outfile = fmt.Sprintf("%s_%s", dl.cfg.LogPrefix, suffix)
 		rf, err = os.OpenFile(tmpfile.Name(), os.O_RDONLY, 0666)
 		if err != nil {
 			return fmt.Errorf("failed to read tmpfile ,%s, %v", tmpfile.Name(), err)
 		}
+		writeFlg = os.O_CREATE | os.O_WRONLY | os.O_TRUNC
 	} else {
+		// ALB Text
 		albIP := splitedKey[len(splitedKey)-2]
 		outfile = fmt.Sprintf("%s_%s.log", dl.cfg.LogPrefix, albIP)
 		rgz, err := os.OpenFile(tmpfile.Name(), os.O_RDONLY, 0666)
@@ -79,11 +92,12 @@ func (dl *Downloader) downloadObject(key *string) error {
 		if err != nil {
 			return fmt.Errorf("failed to extract gzip, %v", err)
 		}
+		writeFlg = os.O_CREATE | os.O_WRONLY | os.O_APPEND
 	}
 
 	wf, err := os.OpenFile(
 		outfile,
-		os.O_CREATE|os.O_WRONLY|os.O_APPEND,
+		writeFlg,
 		0666,
 	)
 	if err != nil {

@@ -1,5 +1,5 @@
 # aloget
-AWS ALB Access Log Downloader
+AWS ALB(Application Load Balancer)/ELB(Classic Load Balancer) Access Log Downloader
 
 ## Usage
 
@@ -42,4 +42,5 @@ Download from [released file](https://github.com/yomon8/aloget/releases)
 |-gz|Don't decompress gzip file | -gz |
 |-version|Show Version|-version|
 |-utc|Recognize the datetime value of -s and -e as UTC| -utc|
+|-elb|ELB(Classic Load Balancer) mode| -elb|
 |-force|Don't prompt before start of downloading|-force|

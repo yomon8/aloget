@@ -73,7 +73,7 @@ func main() {
 			)
 			fmt.Printf("%s %s\n",
 				"Decompress Gzip\t:",
-				fmt.Sprint(!cfg.NoDecompress),
+				fmt.Sprint(!cfg.PreserveGzip),
 			)
 			fmt.Printf("%s %d objects\n",
 				"S3 Objects    \t:",

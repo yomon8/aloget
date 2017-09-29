@@ -23,10 +23,11 @@ type Config struct {
 	Region       string
 	IsUTC        bool
 	ForceMode    bool
-	NoDecompress bool
+	PreserveGzip bool
 	MaxKeyCount  int64
 	StartTime    string
 	EndTime      string
+	IsELB        bool
 }
 
 var (
@@ -119,10 +120,10 @@ func LoadConfig() (*Config, error) {
 	)
 
 	flag.BoolVar(
-		&c.NoDecompress,
+		&c.PreserveGzip,
 		"gz",
 		false,
-		"Don't decompress gzip",
+		"Don't decompress gzip, preserve gzip format.",
 	)
 
 	flag.BoolVar(
@@ -146,6 +147,13 @@ func LoadConfig() (*Config, error) {
 		"Force mode",
 	)
 
+	flag.BoolVar(
+		&c.IsELB,
+		"elb",
+		false,
+		"ELB(Classic Load Balancer) mode",
+	)
+
 	flag.Parse()
 
 	if isVersion {
@@ -154,6 +162,8 @@ func LoadConfig() (*Config, error) {
 	}
 
 	if len(os.Args) == 1 || isHelp || c.S3Prefix == "" || c.S3Bucket == "" || c.LogPrefix == "" {
+		fmt.Println("Command Line:")
+		fmt.Println("aloget -o <OutputFilePrefix> -b <S3Bucket> -p <ALBAccessLogPrefix> [options]\n")
 		flag.Usage()
 		os.Exit(255)
 	}

@@ -29,7 +29,7 @@ func (list List) Less(i, j int) bool {
 }
 
 func (list List) GetTotalByte() int64 {
-	var total int64 = 0
+	var total int64
 	for _, o := range list {
 		total += *o.Size
 	}
@@ -59,7 +59,7 @@ func getTargetPaths(target, end time.Time, config *config.Config) map[string]str
 		if targetPaths[datekey] == "" {
 			targetPaths[datekey] = fmt.Sprintf("%s/AWSLogs/%s/elasticloadbalancing/%s/%s",
 				config.S3Prefix,
-				config.AccountId,
+				config.AccountID,
 				config.Region,
 				datekey,
 			)

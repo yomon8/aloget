@@ -17,7 +17,7 @@ import (
 type Config struct {
 	Session      *session.Session
 	LogPrefix    string
-	AccountId    string
+	AccountID    string
 	S3Prefix     string
 	S3Bucket     string
 	Region       string
@@ -38,7 +38,7 @@ const (
 	timeFormatInput = "2006-01-02 15:04:05"
 )
 
-func (c *Config) fetchAccountId() error {
+func (c *Config) fetchAccountID() error {
 	svc := sts.New(c.Session)
 	input := &sts.GetCallerIdentityInput{}
 	result, err := svc.GetCallerIdentity(input)
@@ -53,7 +53,7 @@ func (c *Config) fetchAccountId() error {
 		}
 	}
 
-	c.AccountId = *result.Account
+	c.AccountID = *result.Account
 	return nil
 }
 
@@ -162,7 +162,7 @@ func LoadConfig() (*Config, error) {
 		c.Region = os.Getenv("AWS_REGION")
 	}
 	isValidRegion := false
-	for key, _ := range endpoints.AwsPartition().Regions() {
+	for key := range endpoints.AwsPartition().Regions() {
 		if c.Region == key {
 			isValidRegion = true
 			break
@@ -171,13 +171,12 @@ func LoadConfig() (*Config, error) {
 	if !isValidRegion {
 		if c.Region == "" {
 			return nil, fmt.Errorf("No AWS Region set, use -r option or OS variable AWS_REGION")
-		} else {
-			validRegion := ""
-			for key, _ := range endpoints.AwsPartition().Regions() {
-				validRegion += fmt.Sprintf("%s\n", key)
-			}
-			return nil, fmt.Errorf("Invalid Region set (%s),it shoud be one of follow.\n%s", c.Region, validRegion)
 		}
+		validRegion := ""
+		for key := range endpoints.AwsPartition().Regions() {
+			validRegion += fmt.Sprintf("%s\n", key)
+		}
+		return nil, fmt.Errorf("Invalid Region set (%s),it shoud be one of follow.\n%s", c.Region, validRegion)
 	}
 
 	var err error
@@ -202,7 +201,7 @@ func LoadConfig() (*Config, error) {
 		return nil, err
 	}
 
-	err = c.fetchAccountId()
+	err = c.fetchAccountID()
 	if err != nil {
 		return nil, err
 	}

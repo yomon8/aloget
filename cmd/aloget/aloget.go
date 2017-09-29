@@ -58,7 +58,7 @@ func main() {
 		var ok bool
 		for !ok {
 			fmt.Printf("%s %s  -  %s\n",
-				fmt.Sprintf("From-To(%s) \t:", zone),
+				"From-To(Local) \t:",
 				list.GetOldestTime().In(time.Local).Format(timeFormatInput),
 				list.GetLatestTime().In(time.Local).Format(timeFormatInput),
 			)

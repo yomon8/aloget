@@ -41,7 +41,9 @@ func (dl *Downloader) Download(list *list.List) error {
 }
 
 func (dl *Downloader) downloadObject(key *string) error {
-	tmpfile, err := ioutil.TempFile("", fmt.Sprintf("tmp_%s", os.Executable))
+	splitedKey := strings.Split(*key, "_")
+	suffix := strings.Join(splitedKey[len(splitedKey)-4:], "_")
+	tmpfile, err := ioutil.TempFile("", fmt.Sprintf("tmp_%s", suffix))
 	if err != nil {
 		return err
 	}
@@ -63,9 +65,7 @@ func (dl *Downloader) downloadObject(key *string) error {
 		outfile string
 	)
 
-	splitedKey := strings.Split(*key, "_")
 	if dl.cfg.NoDecompress {
-		suffix := strings.Join(splitedKey[len(splitedKey)-4:], "_")
 		outfile = fmt.Sprintf("%s_%s", dl.cfg.LogPrefix, suffix)
 		rf, err = os.OpenFile(tmpfile.Name(), os.O_RDONLY, 0666)
 		if err != nil {

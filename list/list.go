@@ -52,7 +52,9 @@ func (list List) GetAllKeys() []*string {
 	return keys
 }
 
-func getTargetPaths(target, end time.Time, config *config.Config) map[string]string {
+func getTargetPaths(config *config.Config) map[string]string {
+	target := config.StartTime
+	end := config.EndTime
 	targetPaths := make(map[string]string, 10)
 	for i := 0; end.Sub(target) > 0; i++ {
 		datekey := target.In(time.UTC).Format(timeFormatObjectPath)
@@ -69,9 +71,9 @@ func getTargetPaths(target, end time.Time, config *config.Config) map[string]str
 	return targetPaths
 }
 
-func GetObjectList(start, end time.Time, config *config.Config) (*List, error) {
+func GetObjectList(config *config.Config) (*List, error) {
 	s3Objects := make([]*s3.Object, 0)
-	for _, path := range getTargetPaths(start, end, config) {
+	for _, path := range getTargetPaths(config) {
 		input := &s3.ListObjectsInput{
 			Bucket:  aws.String(config.S3Bucket),
 			MaxKeys: aws.Int64(config.MaxKeyCount),
@@ -101,7 +103,8 @@ func GetObjectList(start, end time.Time, config *config.Config) (*List, error) {
 			}
 		}
 		for _, o := range result.Contents {
-			if o.LastModified.Sub(start) > 0 && o.LastModified.Sub(end) < 0 {
+			if o.LastModified.Sub(config.StartTime) > 0 &&
+				o.LastModified.Sub(config.EndTime) < 0 {
 				s3Objects = append(s3Objects, o)
 			}
 		}

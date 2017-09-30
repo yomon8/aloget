@@ -13,33 +13,16 @@ import (
 	"github.com/yomon8/aloget/list"
 )
 
-const (
-	timeFormatInput = "2006-01-02 15:04:05 MST"
-)
-
 func main() {
 	cfg, err := config.LoadConfig()
-	if err != nil {
+	if err == config.ErrOnlyPrintAndExit {
+		os.Exit(255)
+	} else if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
 
-	zone := "UTC"
-	if !cfg.IsUTC {
-		zone, _ = time.Now().In(time.Local).Zone()
-	}
-
-	start, _ := time.Parse(
-		timeFormatInput,
-		fmt.Sprintf("%s %s", cfg.StartTime, zone),
-	)
-
-	end, _ := time.Parse(
-		timeFormatInput,
-		fmt.Sprintf("%s %s", cfg.EndTime, zone),
-	)
-
-	list, err := list.GetObjectList(start, end, cfg)
+	list, err := list.GetObjectList(cfg)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -59,13 +42,13 @@ func main() {
 		for !ok {
 			fmt.Printf("%s %s  -  %s\n",
 				"From-To(Local) \t:",
-				list.GetOldestTime().In(time.Local).Format(timeFormatInput),
-				list.GetLatestTime().In(time.Local).Format(timeFormatInput),
+				list.GetOldestTime().In(time.Local).Format(config.TimeFormatParse),
+				list.GetLatestTime().In(time.Local).Format(config.TimeFormatParse),
 			)
 			fmt.Printf("%s %s  -  %s\n",
 				"From-To(UTC)   \t:",
-				list.GetOldestTime().Format(timeFormatInput),
-				list.GetLatestTime().Format(timeFormatInput),
+				list.GetOldestTime().Format(config.TimeFormatParse),
+				list.GetLatestTime().Format(config.TimeFormatParse),
 			)
 			fmt.Printf("%s %s\n",
 				"Download Size  \t:",
@@ -79,7 +62,7 @@ func main() {
 				"S3 Objects    \t:",
 				list.Len(),
 			)
-			fmt.Print("Start/Cancel>")
+			fmt.Print("Start/Cancel?>")
 			fmt.Scanf("%s", &key)
 			switch key {
 			case "S", "s", "Start", "start":

@@ -1,6 +1,7 @@
 package config
 
 import (
+	"errors"
 	"flag"
 	"fmt"
 	"os"
@@ -15,28 +16,46 @@ import (
 )
 
 type Config struct {
-	Session      *session.Session
-	LogPrefix    string
-	AccountID    string
-	S3Prefix     string
-	S3Bucket     string
-	Region       string
-	IsUTC        bool
-	ForceMode    bool
-	PreserveGzip bool
-	MaxKeyCount  int64
-	StartTime    string
-	EndTime      string
-	IsELB        bool
+	Session              *session.Session
+	LogPrefix            string
+	AccountID            string
+	S3Prefix             string
+	S3Bucket             string
+	Region               string
+	IsUTC                bool
+	ForceMode            bool
+	PreserveGzip         bool
+	MaxKeyCount          int64
+	StartTime            time.Time
+	EndTime              time.Time
+	IsELB                bool
+	useDefaultCredensial bool
 }
 
-var (
-	version = "0"
+const (
+	usage = `
+Usage:
+  aloget -o <OutputFilePrefix> -b <S3Bucket> -p <ALBAccessLogPrefix>
+         [-s yyyy-MM-ddTHH:mm:ss] [-e yyyy-MM-ddTHH:mm:ss]
+         [-r aws-region]
+         [-cred] [-gz|-elb] [-utc] [-force] [-version]
+`
+
+	maxkey          = 10240
+	timeFormatInput = "2006-01-02T15:04:05"
+	TimeFormatParse = "2006-01-02T15:04:05 MST"
 )
 
-const (
-	maxkey          = 10240
-	timeFormatInput = "2006-01-02 15:04:05"
+var (
+	version             = "0"
+	ErrOnlyPrintAndExit = errors.New("")
+	startTimeInput      = ""
+	endTimeInput        = ""
+	defaultEndTime      = time.Now()
+	defaultStartTime    = defaultEndTime.Add(time.Duration(10) * -time.Minute)
+	isVersion           = false
+	isHelp              = false
+	err                 error
 )
 
 func (c *Config) fetchAccountID() error {
@@ -58,18 +77,7 @@ func (c *Config) fetchAccountID() error {
 	return nil
 }
 
-func LoadConfig() (*Config, error) {
-	var (
-		defaultEndTime       = time.Now()
-		defaultStartTime     = defaultEndTime.Add(time.Duration(10) * -time.Minute)
-		useDefaultCredensial = false
-		isVersion            = false
-		isHelp               = false
-	)
-
-	c := new(Config)
-	c.MaxKeyCount = maxkey
-
+func parseFlags(c *Config) {
 	flag.StringVar(
 		&c.S3Bucket,
 		"b",
@@ -92,14 +100,14 @@ func LoadConfig() (*Config, error) {
 	)
 
 	flag.StringVar(
-		&c.StartTime,
+		&startTimeInput,
 		"s",
 		defaultStartTime.Format(timeFormatInput),
 		"Start Time. default 10 minutes ago",
 	)
 
 	flag.StringVar(
-		&c.EndTime,
+		&endTimeInput,
 		"e",
 		defaultEndTime.Format(timeFormatInput),
 		"End Time. defalut now ",
@@ -127,7 +135,7 @@ func LoadConfig() (*Config, error) {
 	)
 
 	flag.BoolVar(
-		&useDefaultCredensial,
+		&c.useDefaultCredensial,
 		"cred",
 		false,
 		"Use default credentials (~/.aws/credentials)",
@@ -155,17 +163,47 @@ func LoadConfig() (*Config, error) {
 	)
 
 	flag.Parse()
+}
 
+func validateOptions(c *Config) error {
 	if isVersion {
 		fmt.Println("version :", version)
-		os.Exit(0)
+		return ErrOnlyPrintAndExit
 	}
 
+	// Check Options
 	if len(os.Args) == 1 || isHelp || c.S3Prefix == "" || c.S3Bucket == "" || c.LogPrefix == "" {
-		fmt.Println("Command Line:")
-		fmt.Println("aloget -o <OutputFilePrefix> -b <S3Bucket> -p <ALBAccessLogPrefix> [options]\n")
+		fmt.Println(usage)
 		flag.Usage()
-		os.Exit(255)
+		return ErrOnlyPrintAndExit
+	}
+
+	if c.IsELB && c.PreserveGzip {
+		fmt.Println("-elb can't use with -gz")
+		return ErrOnlyPrintAndExit
+	}
+
+	// Check Time Inputs
+	zone := "UTC"
+	if !c.IsUTC {
+		zone, _ = time.Now().In(time.Local).Zone()
+	}
+	c.StartTime, err = time.Parse(
+		TimeFormatParse,
+		fmt.Sprintf("%s %s", startTimeInput, zone),
+	)
+	if err != nil {
+		return fmt.Errorf("-s time format is %s", timeFormatInput)
+	}
+	c.EndTime, err = time.Parse(
+		TimeFormatParse,
+		fmt.Sprintf("%s %s", endTimeInput, zone),
+	)
+	if err != nil {
+		return fmt.Errorf("-e time format is %s", timeFormatInput)
+	}
+	if c.EndTime.Sub(c.StartTime) < 0 {
+		return fmt.Errorf("-s should be before -e")
 	}
 
 	if c.Region == "" {
@@ -180,17 +218,16 @@ func LoadConfig() (*Config, error) {
 	}
 	if !isValidRegion {
 		if c.Region == "" {
-			return nil, fmt.Errorf("No AWS Region set, use -r option or OS variable AWS_REGION")
+			return fmt.Errorf("No AWS region set, use -r option or os variable AWS_REGION")
 		}
 		validRegion := ""
 		for key := range endpoints.AwsPartition().Regions() {
 			validRegion += fmt.Sprintf("%s\n", key)
 		}
-		return nil, fmt.Errorf("Invalid Region set (%s),it shoud be one of follow.\n%s", c.Region, validRegion)
+		return fmt.Errorf("Invalid Region set (%s),it shoud be one of follow.\n%s", c.Region, validRegion)
 	}
 
-	var err error
-	if useDefaultCredensial {
+	if c.useDefaultCredensial {
 		c.Session, err = session.NewSession(&aws.Config{
 			Credentials: credentials.NewSharedCredentials("", "default"),
 			Region:      aws.String(c.Region),
@@ -208,13 +245,23 @@ func LoadConfig() (*Config, error) {
 		})
 	}
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	err = c.fetchAccountID()
 	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func LoadConfig() (*Config, error) {
+	c := new(Config)
+	c.MaxKeyCount = maxkey
+	parseFlags(c)
+	err := validateOptions(c)
+	if err != nil {
 		return nil, err
 	}
-
 	return c, nil
 }

@@ -90,7 +90,7 @@ func (dl *Downloader) downloadObject(key *string) error {
 		rgz, err := os.OpenFile(tmpfile.Name(), os.O_RDONLY, 0666)
 		rf, err = gzip.NewReader(rgz)
 		if err != nil {
-			return fmt.Errorf("failed to extract gzip, %v", err)
+			return fmt.Errorf("failed to extract gzip, if donwload elb log, use -elb option %v", err)
 		}
 		writeFlg = os.O_CREATE | os.O_WRONLY | os.O_APPEND
 	}

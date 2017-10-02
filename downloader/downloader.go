@@ -40,6 +40,12 @@ func (dl *Downloader) Download(list *list.List) error {
 	return nil
 }
 
+func (dl *Downloader) debugLog(text string) {
+	if dl.cfg.Debug {
+		fmt.Println(text)
+	}
+}
+
 func (dl *Downloader) downloadObject(key *string) error {
 	splitedKey := strings.Split(*key, "_")
 	suffix := strings.Join(splitedKey[len(splitedKey)-4:], "_")
@@ -58,7 +64,7 @@ func (dl *Downloader) downloadObject(key *string) error {
 	if err != nil {
 		return fmt.Errorf("failed to download file, %v", err)
 	}
-	fmt.Println("download:", d)
+	dl.debugLog(fmt.Sprintf("download size\t: %d", d))
 
 	var (
 		rf       io.Reader
@@ -109,8 +115,8 @@ func (dl *Downloader) downloadObject(key *string) error {
 	if err != nil {
 		return fmt.Errorf("failed to write file, %v", err)
 	}
-	fmt.Println("write  \t:", n)
-	fmt.Println("s3obj  \t:", *key)
-	fmt.Println("output \t:", outfile)
+	dl.debugLog(fmt.Sprintf("write size   \t: %d", n))
+	dl.debugLog(fmt.Sprintf("s3obj        \t: %s", *key))
+	dl.debugLog(fmt.Sprintf("output file  \t: %s", outfile))
 	return nil
 }

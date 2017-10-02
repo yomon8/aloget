@@ -30,6 +30,7 @@ type Config struct {
 	EndTime              time.Time
 	IsELB                bool
 	useDefaultCredensial bool
+	Debug                bool
 }
 
 const (
@@ -38,7 +39,7 @@ Usage:
   aloget -o <OutputFilePrefix> -b <S3Bucket> -p <ALBAccessLogPrefix>
          [-s yyyy-MM-ddTHH:mm:ss] [-e yyyy-MM-ddTHH:mm:ss]
          [-r aws-region]
-         [-cred] [-gz|-elb] [-utc] [-force] [-version]
+         [-cred] [-gz|-elb] [-utc] [-force] [-debug] [-version]
 `
 
 	maxkey          = 10240
@@ -160,6 +161,13 @@ func parseFlags(c *Config) {
 		"elb",
 		false,
 		"ELB(Classic Load Balancer) mode",
+	)
+
+	flag.BoolVar(
+		&c.Debug,
+		"debug",
+		false,
+		"Debug mode",
 	)
 
 	flag.Parse()

@@ -44,3 +44,5 @@ Download from [released file](https://github.com/yomon8/aloget/releases)
 |-utc|Recognize the datetime value of -s and -e as UTC| -utc|
 |-elb|ELB(Classic Load Balancer) mode| -elb|
 |-force|Don't prompt before start of downloading|-force|
+|-debug|Print debug message|-debug|
+|-stdout|Write access log to stdout|-stdout|

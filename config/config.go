@@ -31,6 +31,7 @@ type Config struct {
 	IsELB                bool
 	useDefaultCredensial bool
 	Debug                bool
+	Stdout               bool
 }
 
 const (
@@ -170,6 +171,13 @@ func parseFlags(c *Config) {
 		"Debug mode",
 	)
 
+	flag.BoolVar(
+		&c.Stdout,
+		"stdout",
+		false,
+		"Write access log to stdout. [Caution] output is not sorted.",
+	)
+
 	flag.Parse()
 }
 
@@ -212,6 +220,11 @@ func validateOptions(c *Config) error {
 	}
 	if c.EndTime.Sub(c.StartTime) < 0 {
 		return fmt.Errorf("-s should be before -e")
+	}
+
+	if c.Stdout {
+		c.Debug = false
+		c.ForceMode = true
 	}
 
 	if c.Region == "" {

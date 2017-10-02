@@ -101,6 +101,14 @@ func (dl *Downloader) downloadObject(key *string) error {
 		writeFlg = os.O_CREATE | os.O_WRONLY | os.O_APPEND
 	}
 
+	if dl.cfg.Stdout {
+		_, err := io.Copy(os.Stdout, rf)
+		if err != nil {
+			return fmt.Errorf("failed to write to stdout, %v", err)
+		}
+		return nil
+	}
+
 	wf, err := os.OpenFile(
 		outfile,
 		writeFlg,

@@ -40,7 +40,7 @@ Usage:
   aloget -o <OutputFilePrefix> -b <S3Bucket> -p <ALBAccessLogPrefix>
          [-s yyyy-MM-ddTHH:mm:ss] [-e yyyy-MM-ddTHH:mm:ss]
          [-r aws-region]
-         [-cred] [-gz|-elb] [-utc] [-force] [-debug] [-version]
+         [-cred] [-gz|-elb] [-utc] [-stdout] [-force] [-debug] [-version]
 `
 
 	maxkey          = 10240
@@ -223,8 +223,13 @@ func validateOptions(c *Config) error {
 	}
 
 	if c.Stdout {
-		c.Debug = false
-		c.ForceMode = true
+		if c.Debug {
+			fmt.Println("-stdout can't use with -debug")
+			return ErrOnlyPrintAndExit
+		} else if c.ForceMode {
+			fmt.Println("-stdout can't use with -force")
+			return ErrOnlyPrintAndExit
+		}
 	}
 
 	if c.Region == "" {

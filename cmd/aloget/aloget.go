@@ -10,7 +10,7 @@ import (
 
 	"github.com/yomon8/aloget/config"
 	"github.com/yomon8/aloget/downloader"
-	"github.com/yomon8/aloget/list"
+	"github.com/yomon8/aloget/objects"
 )
 
 func main() {
@@ -22,7 +22,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	list, err := list.GetObjectList(cfg)
+	list, err := objects.GetObjectList(cfg)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)

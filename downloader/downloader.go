@@ -13,7 +13,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 
 	"github.com/yomon8/aloget/config"
-	"github.com/yomon8/aloget/list"
+	"github.com/yomon8/aloget/objects"
 )
 
 type Downloader struct {
@@ -30,7 +30,7 @@ func NewDownloader(cfg *config.Config) *Downloader {
 	}
 }
 
-func (dl *Downloader) Download(list *list.List) error {
+func (dl *Downloader) Download(list *objects.List) error {
 	for _, key := range list.GetAllKeys() {
 		err := dl.downloadObject(key)
 		if err != nil {

@@ -1,4 +1,4 @@
-package list
+package objects
 
 import (
 	"fmt"
@@ -16,37 +16,37 @@ const (
 
 type List []*s3.Object
 
-func (list List) Len() int {
-	return len(list)
+func (objs List) Len() int {
+	return len(objs)
 }
 
-func (list List) Swap(i, j int) {
-	list[i], list[j] = list[j], list[i]
+func (objs List) Swap(i, j int) {
+	objs[i], objs[j] = objs[j], objs[i]
 }
 
-func (list List) Less(i, j int) bool {
-	return list[i].LastModified.Before(*list[j].LastModified)
+func (objs List) Less(i, j int) bool {
+	return objs[i].LastModified.Before(*objs[j].LastModified)
 }
 
-func (list List) GetTotalByte() int64 {
+func (objs List) GetTotalByte() int64 {
 	var total int64
-	for _, o := range list {
+	for _, o := range objs {
 		total += *o.Size
 	}
 	return total
 }
 
-func (list List) GetOldestTime() time.Time {
-	return *list[0].LastModified
+func (objs List) GetOldestTime() time.Time {
+	return *objs[0].LastModified
 }
 
-func (list List) GetLatestTime() time.Time {
-	return *list[list.Len()-1].LastModified
+func (objs List) GetLatestTime() time.Time {
+	return *objs[objs.Len()-1].LastModified
 }
 
-func (list List) GetAllKeys() []*string {
+func (objs List) GetAllKeys() []*string {
 	keys := make([]*string, 0)
-	for _, obj := range list {
+	for _, obj := range objs {
 		keys = append(keys, obj.Key)
 	}
 	return keys
@@ -109,6 +109,6 @@ func GetObjectList(config *config.Config) (*List, error) {
 			}
 		}
 	}
-	var list List = s3Objects
-	return &list, nil
+	var objs List = s3Objects
+	return &objs, nil
 }

@@ -226,10 +226,8 @@ func validateOptions(c *Config) error {
 		if c.Debug {
 			fmt.Println("-stdout can't use with -debug")
 			return ErrOnlyPrintAndExit
-		} else if c.ForceMode {
-			fmt.Println("-stdout can't use with -force")
-			return ErrOnlyPrintAndExit
 		}
+		c.ForceMode = true
 	}
 
 	if c.Region == "" {

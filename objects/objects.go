@@ -45,9 +45,9 @@ func (objs List) GetLatestTime() time.Time {
 }
 
 func (objs List) GetAllKeys() []*string {
-	keys := make([]*string, 0)
-	for _, obj := range objs {
-		keys = append(keys, obj.Key)
+	keys := make([]*string, objs.Len())
+	for i, obj := range objs {
+		keys[i] = obj.Key
 	}
 	return keys
 }

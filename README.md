@@ -34,6 +34,14 @@ Download from [released file](https://github.com/yomon8/aloget/releases)
 
 ## Arguments
 
+```
+Usage:
+  aloget -b <S3Bucket> -p <ALBAccessLogPrefix> {-o <OutputFilePrefix>|-stdout}
+         [-s yyyy-MM-ddTHH:mm:ss] [-e yyyy-MM-ddTHH:mm:ss]
+         [-r aws-region]
+         [-cred] [-gz|-elb] [-utc] [-force] [-debug] [-version]
+```
+
 |Arguments|Description|Example|
 |:--|:--|:--|
 |-b|S3 Bucket name| -b yourbucket|

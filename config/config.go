@@ -226,6 +226,9 @@ func validateOptions(c *Config) error {
 		if c.Debug {
 			fmt.Println("-stdout can't use with -debug")
 			return ErrOnlyPrintAndExit
+		} else if c.PreserveGzip {
+			fmt.Println("-stdout can't use with -gz")
+			return ErrOnlyPrintAndExit
 		}
 		c.ForceMode = true
 	}

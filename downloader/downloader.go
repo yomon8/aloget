@@ -1,10 +1,12 @@
 package downloader
 
 import (
+	"bufio"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"os"
+	"sort"
 	"strings"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -12,6 +14,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 
 	"github.com/yomon8/aloget/config"
+	"github.com/yomon8/aloget/entry"
 	"github.com/yomon8/aloget/fileio"
 	"github.com/yomon8/aloget/objects"
 )
@@ -21,6 +24,8 @@ type Downloader struct {
 	cfg      *config.Config
 	files    []string
 	fileio   fileio.FileIO
+	buffer   []*entry.Entry
+	parse    func(string) (*entry.Entry, error)
 }
 
 func NewDownloader(cfg *config.Config) *Downloader {
@@ -32,13 +37,19 @@ func NewDownloader(cfg *config.Config) *Downloader {
 	if cfg.IsELB {
 		// ELB Text
 		d.fileio = fileio.NewELBLog(cfg)
+		d.parse = entry.ParseELBLog
 	} else if cfg.PreserveGzip {
 		// ALB Gzip
 		d.fileio = fileio.NewALBLogGzip(cfg)
 	} else {
 		// ALB Text
 		d.fileio = fileio.NewALBLog(cfg)
+		d.parse = entry.ParseALBLog
 	}
+	if cfg.Stdout {
+		d.buffer = make([]*entry.Entry, 0)
+	}
+
 	return d
 }
 
@@ -49,6 +60,9 @@ func (dl *Downloader) Download(list *objects.List) error {
 			return err
 		}
 	}
+	if dl.cfg.Stdout {
+		dl.printBuffer()
+	}
 	return nil
 }
 
@@ -56,6 +70,30 @@ func (dl *Downloader) debugLog(text string) {
 	if dl.cfg.Debug {
 		fmt.Println(text)
 	}
+}
+
+func (dl *Downloader) printBuffer() {
+	var entries entry.Entries = dl.buffer
+	sort.Sort(entries)
+	for _, entry := range entries.GetAllEntries() {
+		fmt.Println(entry.Line)
+	}
+
+}
+
+func (dl *Downloader) addBuffer(rs *io.Reader) error {
+	scanner := bufio.NewScanner(*rs)
+	for scanner.Scan() {
+		e, err := dl.parse(scanner.Text())
+		if err != nil {
+			return err
+		}
+		dl.buffer = append(dl.buffer, e)
+	}
+	if err := scanner.Err(); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (dl *Downloader) downloadObject(key *string) error {
@@ -85,10 +123,11 @@ func (dl *Downloader) downloadObject(key *string) error {
 
 	if dl.cfg.Stdout {
 		// Print to STDOUT
-		_, err := io.Copy(os.Stdout, *rs)
+		err := dl.addBuffer(rs)
 		if err != nil {
-			return fmt.Errorf("failed to write to stdout, %v", err)
+			return fmt.Errorf("failed to write buffer, %v", err)
 		}
+		return nil
 	} else {
 		// Write Output
 		wf, err := dl.fileio.GetWriteFile(key)

@@ -13,7 +13,11 @@ $ export AWS_REGION='us-east-1'
 
 
 ```
-$ aloget -o <OutputFilePrefix> -b <S3Bucket> -p <ALBAccessLogPrefix> [options]
+#-- output to stdout
+$ aloget -b <S3Bucket> -p <ALBAccessLogPrefix> -stdout [options] 
+
+#-- output to file
+$ aloget -o <OutputFilePrefix> -b <S3Bucket> -p <ALBAccessLogPrefix> [options] 
 ```
 
 ## Install
@@ -28,13 +32,14 @@ or
  
 Download from [released file](https://github.com/yomon8/aloget/releases)
 
-## OPTIONS
+## Arguments
 
-|Option|Description|Example|
+|Arguments|Description|Example|
 |:--|:--|:--|
-|-o(Required)|Output file prefix|-l /tmp/alblog|
-|-b(Required)|S3 Bucket name| -b yourbucket|
-|-p(Required)|S3 ALB AccessLog Prefix| -p alb-log/alb-name|
+|-b|S3 Bucket name| -b yourbucket|
+|-p|S3 ALB AccessLog Prefix| -p alb-log/alb-name|
+|-o|Output file prefix,if provided no value,set output to STDOUT|-l /tmp/alblog|
+|-stdout|Write access log to stdout|-stdout|
 |-r|Required to set AWS Region or set env variable AWS_REGION| -r us-west-1|
 |-s|Download files newer than start time (default 10 minutes ago)| -s 2017-09-28T11:59:54|
 |-e|Download files older than end time (defalut now)| -e 2017-09-28T12:59:54 |
@@ -45,4 +50,3 @@ Download from [released file](https://github.com/yomon8/aloget/releases)
 |-elb|ELB(Classic Load Balancer) mode| -elb|
 |-force|Don't prompt before start of downloading|-force|
 |-debug|Print debug message|-debug|
-|-stdout|Write access log to stdout|-stdout|

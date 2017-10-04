@@ -37,10 +37,10 @@ type Config struct {
 const (
 	usage = `
 Usage:
-  aloget -o <OutputFilePrefix> -b <S3Bucket> -p <ALBAccessLogPrefix>
+  aloget -b <S3Bucket> -p <ALBAccessLogPrefix> {-o <OutputFilePrefix>|-stdout}
          [-s yyyy-MM-ddTHH:mm:ss] [-e yyyy-MM-ddTHH:mm:ss]
          [-r aws-region]
-         [-cred] [-gz|-elb] [-utc] [-stdout] [-force] [-debug] [-version]
+         [-cred] [-gz|-elb] [-utc] [-force] [-debug] [-version]
 `
 
 	maxkey          = 10240
@@ -84,21 +84,21 @@ func parseFlags(c *Config) {
 		&c.S3Bucket,
 		"b",
 		"",
-		"[Required] S3 Bucket",
+		"S3 Bucket",
 	)
 
 	flag.StringVar(
 		&c.S3Prefix,
 		"p",
 		"",
-		"[Required] S3 ALB AccessLog Prefix",
+		"S3 ALB AccessLog Prefix",
 	)
 
 	flag.StringVar(
 		&c.LogPrefix,
 		"o",
 		"",
-		"[Required] Output file prefix. (ex \"/tmp/alb\")",
+		"Output file prefix. (ex \"/tmp/alb\")",
 	)
 
 	flag.StringVar(
@@ -175,7 +175,7 @@ func parseFlags(c *Config) {
 		&c.Stdout,
 		"stdout",
 		false,
-		"Write access log to stdout. [Caution] output is not sorted.",
+		"Write access log to stdout.",
 	)
 
 	flag.Parse()
@@ -188,9 +188,18 @@ func validateOptions(c *Config) error {
 	}
 
 	// Check Options
-	if len(os.Args) == 1 || isHelp || c.S3Prefix == "" || c.S3Bucket == "" || c.LogPrefix == "" {
+	if len(os.Args) == 1 || isHelp || c.S3Prefix == "" || c.S3Bucket == "" {
 		fmt.Println(usage)
 		flag.Usage()
+		return ErrOnlyPrintAndExit
+	}
+
+	if c.LogPrefix == "" && !c.Stdout {
+		fmt.Println("You should set either -o or -stdout")
+		return ErrOnlyPrintAndExit
+	}
+	if c.LogPrefix != "" && c.Stdout {
+		fmt.Println("You can only set either -o or -stdout")
 		return ErrOnlyPrintAndExit
 	}
 
@@ -224,10 +233,10 @@ func validateOptions(c *Config) error {
 
 	if c.Stdout {
 		if c.Debug {
-			fmt.Println("-stdout can't use with -debug")
+			fmt.Println("need to set -o to use with -debug")
 			return ErrOnlyPrintAndExit
 		} else if c.PreserveGzip {
-			fmt.Println("-stdout can't use with -gz")
+			fmt.Println("need to set -o to use with -gz")
 			return ErrOnlyPrintAndExit
 		}
 		c.ForceMode = true

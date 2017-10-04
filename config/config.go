@@ -98,7 +98,7 @@ func parseFlags(c *Config) {
 		&c.LogPrefix,
 		"o",
 		"",
-		"Output file prefix. (ex \"/tmp/alb\")",
+		"Output file prefix. (ex /tmp/alb)",
 	)
 
 	flag.StringVar(

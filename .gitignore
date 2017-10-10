@@ -2,6 +2,7 @@
 !*/
 !*.*
 !Makefile
+.DS_Store
 *.swp
 *.txt
 pkg/

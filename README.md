@@ -1,4 +1,8 @@
-# aloget
+aloget
+====
+[![Build Status](https://travis-ci.org/yomon8/aloget.svg?branch=master)](https://travis-ci.org/yomon8/aloget)
+[![Latest Version](http://img.shields.io/github/release/yomon8/aloget.svg?style=flat-square)](https://github.com/yomon8/aloget/releases)
+
 AWS ALB(Application Load Balancer)/ELB(Classic Load Balancer) Access Log Downloader
 
 ## Usage

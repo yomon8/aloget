@@ -15,11 +15,11 @@ func TestAlbLogParser(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		entry, err := Parse(c.line)
+		entry, err := ParseALBLog(c.line)
 		if err != nil {
 			t.Fatalf("parse error:%#v\n", err)
 		}
-		if entry.RequestTime.Format(alblogTimeFormat) != c.datetime {
+		if entry.RequestTime.Format(logTimeFormat) != c.datetime {
 			t.Fatalf("parse error Time:%v\n", entry.RequestTime)
 		}
 	}

@@ -41,9 +41,11 @@ Download from [released file](https://github.com/yomon8/aloget/releases)
 ```
 Usage:
   aloget -b <S3Bucket> -p <ALBAccessLogPrefix> {-o <OutputFilePrefix>|-stdout}
-         [-s yyyy-MM-ddTHH:mm:ss] [-e yyyy-MM-ddTHH:mm:ss]
          [-r aws-region]
+         [-s yyyy-MM-ddTHH:mm:ss] [-e yyyy-MM-ddTHH:mm:ss]
+         [-duration <Minutes>]
          [-cred] [-gz|-elb] [-utc] [-force] [-debug] [-version]
+
 ```
 
 |Arguments|Description|Example|
@@ -53,8 +55,9 @@ Usage:
 |-o|Output file prefix,if provided no value,set output to STDOUT|-l /tmp/alblog|
 |-stdout|Write access log to stdout|-stdout|
 |-r|Required to set AWS Region or set env variable AWS_REGION| -r us-west-1|
-|-s|Download files newer than start time (default 10 minutes ago)| -s 2017-09-28T11:59:54|
-|-e|Download files older than end time (defalut now)| -e 2017-09-28T12:59:54 |
+|-s|Download files newer than [s]tart time (default 10 minutes ago)| -s 2017-09-28T11:59:54|
+|-e|Download files older than [e]nd time (defalut now)| -e 2017-09-28T12:59:54 |
+|-duration|Duration minutes of downloading logs |-duration 30|
 |-cred|Use default profile of credential file (Usually ~/.aws/credentials)| -cred|
 |-gz|Don't decompress gzip file | -gz |
 |-version|Show Version|-version|

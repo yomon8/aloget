@@ -38,8 +38,9 @@ const (
 	usage = `
 Usage:
   aloget -b <S3Bucket> -p <ALBAccessLogPrefix> {-o <OutputFilePrefix>|-stdout}
-         [-s yyyy-MM-ddTHH:mm:ss] [-e yyyy-MM-ddTHH:mm:ss]
          [-r aws-region]
+         [-s yyyy-MM-ddTHH:mm:ss] [-e yyyy-MM-ddTHH:mm:ss]
+         [-duration <Minutes>]
          [-cred] [-gz|-elb] [-utc] [-force] [-debug] [-version]
 `
 
@@ -54,7 +55,9 @@ var (
 	startTimeInput      = ""
 	endTimeInput        = ""
 	defaultEndTime      = time.Now()
-	defaultStartTime    = defaultEndTime.Add(time.Duration(10) * -time.Minute)
+	defaultDuraion      = 10
+	defaultStartTime    = defaultEndTime.Add(time.Duration(defaultDuraion) * -time.Minute)
+	duration            = 0
 	isVersion           = false
 	isHelp              = false
 	err                 error
@@ -113,6 +116,13 @@ func parseFlags(c *Config) {
 		"e",
 		defaultEndTime.Format(timeFormatInput),
 		"End Time. defalut now ",
+	)
+
+	flag.IntVar(
+		&duration,
+		"duration",
+		defaultDuraion,
+		"Duraion of log (minutes)",
 	)
 
 	flag.StringVar(
@@ -213,10 +223,6 @@ func validateOptions(c *Config) error {
 	if !c.IsUTC {
 		zone, _ = time.Now().In(time.Local).Zone()
 	}
-	c.StartTime, err = time.Parse(
-		TimeFormatParse,
-		fmt.Sprintf("%s %s", startTimeInput, zone),
-	)
 	if err != nil {
 		return fmt.Errorf("-s time format is %s", timeFormatInput)
 	}
@@ -224,6 +230,14 @@ func validateOptions(c *Config) error {
 		TimeFormatParse,
 		fmt.Sprintf("%s %s", endTimeInput, zone),
 	)
+	if duration == defaultDuraion {
+		c.StartTime, err = time.Parse(
+			TimeFormatParse,
+			fmt.Sprintf("%s %s", startTimeInput, zone),
+		)
+	} else {
+		c.StartTime = c.EndTime.Add(time.Duration(duration) * -time.Minute)
+	}
 	if err != nil {
 		return fmt.Errorf("-e time format is %s", timeFormatInput)
 	}

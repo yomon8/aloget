@@ -8,14 +8,13 @@ import (
 
 	humanize "github.com/dustin/go-humanize"
 
-	"github.com/yomon8/aloget/config"
 	"github.com/yomon8/aloget/downloader"
 	"github.com/yomon8/aloget/objects"
 )
 
 func main() {
-	cfg, err := config.LoadConfig()
-	if err == config.ErrOnlyPrintAndExit {
+	cfg, err := loadConfig()
+	if err == ErrOnlyPrintAndExit {
 		os.Exit(255)
 	} else if err != nil {
 		fmt.Println(err)
@@ -42,13 +41,13 @@ func main() {
 		for !ok {
 			fmt.Printf("%s %s  -  %s\n",
 				"From-To(Local) \t:",
-				list.GetOldestTime().In(time.Local).Format(config.TimeFormatParse),
-				list.GetLatestTime().In(time.Local).Format(config.TimeFormatParse),
+				list.GetOldestTime().In(time.Local).Format(TimeFormatParse),
+				list.GetLatestTime().In(time.Local).Format(TimeFormatParse),
 			)
 			fmt.Printf("%s %s  -  %s\n",
 				"From-To(UTC)   \t:",
-				list.GetOldestTime().Format(config.TimeFormatParse),
-				list.GetLatestTime().Format(config.TimeFormatParse),
+				list.GetOldestTime().Format(TimeFormatParse),
+				list.GetLatestTime().Format(TimeFormatParse),
 			)
 			fmt.Printf("%s %s\n",
 				"Download Size  \t:",

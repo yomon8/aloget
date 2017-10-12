@@ -30,7 +30,6 @@ Usage:
 )
 
 var (
-	version             = "0"
 	ErrOnlyPrintAndExit = errors.New("")
 	startTimeInput      = ""
 	endTimeInput        = ""
